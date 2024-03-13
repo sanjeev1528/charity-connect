@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
-
+import { ClerkProvider } from '@clerk/nextjs'
 export const metadata: Metadata = {
 	title: {
 		default: siteConfig.name,
@@ -30,6 +30,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
+		<ClerkProvider> 
 		<html lang="en" suppressHydrationWarning>
 			<head />
 			<body
@@ -52,12 +53,13 @@ export default function RootLayout({
 								title="nextui.org homepage"
 							>
 								<span className="text-default-600">Powered by</span>
-								<p className="text-primary">NextUI</p>
+								<p className="text-primary">New_lavan</p>
 							</Link>
 						</footer>
 					</div>
 				</Providers>
 			</body>
 		</html>
+		</ClerkProvider>
 	);
 }
