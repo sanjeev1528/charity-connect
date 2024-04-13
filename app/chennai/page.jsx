@@ -2,15 +2,24 @@
 import Supabase from '../supabasedb.js';
 import { useState, useEffect } from 'react';
 import emailjs from 'emailjs-com';
-import { clerkClient } from "@clerk/nextjs";
-import { getAuth } from "@clerk/nextjs/server";
-import { NextApiRequest, NextApiResponse } from "next";
+import {useUser,useClerk} from "@clerk/nextjs";
 
+let  emaildata={};
 function page() {
 
-  
+    const { user } = useUser();
     const [orglist, setOrglist] = useState([]);
     const [btnpress , setBtnpress] = useState(0);
+
+
+    if(user){
+    
+        emaildata.fullName= user.fullName,
+        emaildata.email= user.emailAddresses[0].emailAddress,
+        emaildata.phonenumber=user.phoneNumbers[0].phoneNumber
+        
+      }
+      console.log("email data from clerk"+JSON.stringify(emaildata));
 
     useEffect(() => {
         async function fetchData() {
@@ -46,9 +55,10 @@ function page() {
               
             console.log("useeffect running")
           const dataToSend = {
-            from_name: "Bond",
-            from_email: 'sanjeevcsevec@gmail.com',
-            message: 'This is a test email sent via EmailJS   ' 
+            from_name: "Charity Connect",
+            to_email:emaildata.to_email,
+            from_email: "sanjeevcsevec@gmail.com",
+            message: 'you have a message \n'+'Name:'+emaildata.fullName+'\n'+'phone Number:'+ emaildata.phonenumber+'\n'+ 'Email:'+ emaildata.email
           };
       
           emailjs.send('service_y9gkpjn', 'template_sjj0vfk', dataToSend, 'GqCiVqUZmi6xSg8jq')
@@ -62,10 +72,23 @@ function page() {
             });
         } }, [btnpress]);
 
- const sendEmail = () => {
+ const sendEmail = async (orgId) => {
    
-    setBtnpress(1); // Updating btnpress to 1
+    
     console.log("Button pressed:", btnpress); 
+    console.log("orgID : "+orgId);
+
+    const { data , error } = await Supabase.from('chennai_table').select('email').eq('id', orgId) ;
+    if (error){
+        console.log("error: "+error);
+    }
+   
+        emaildata.to_email = data[0].email; 
+        console.log("to email generated: "+emaildata.to_email );
+   
+
+    setBtnpress(1);  // Updating btnpress to 1
+    
   };
 
 
@@ -88,13 +111,13 @@ function page() {
                                 <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{org.org_name}</h5>
                             </a>
                             <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{org.description}</p>
-
+                            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">phn:<span> </span>{org.phone}</p>
                         </div>
                     </div>
 
                     <div className="px-5 pb-5">
-                        <a href="#" className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick={sendEmail}>
-                            Read more
+                        <a href="#" className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick={() => sendEmail(org.id)}>
+                        Interested
                             <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
                             </svg>
