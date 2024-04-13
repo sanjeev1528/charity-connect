@@ -1,6 +1,6 @@
 import React from 'react'
 
-function page() {
+function Page() {
   return (
     
 <div className='flex flex-col gap-10'>
@@ -84,4 +84,4 @@ function page() {
   )
 }
 
-export default page
+export default Page

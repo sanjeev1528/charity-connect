@@ -5,7 +5,7 @@ import emailjs from 'emailjs-com';
 import {useUser,useClerk} from "@clerk/nextjs";
 
 let  emaildata={};
-function page() {
+function Page() {
 
     const { user } = useUser();
     const [orglist, setOrglist] = useState([]);
@@ -136,5 +136,5 @@ function page() {
     )
 }
 
-export default page
+export default Page
 
